@@ -1,5 +1,5 @@
 // DÁN ĐƯỜNG DẪN WEB APP TỪ GOOGLE APPS SCRIPT VÀO ĐÂY:
-const BACKEND_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzVyCB6iL3RrbplJQyUrBRYf8z2tJ4OutUUlMXdcBIvq0uO7EjiLvB8r74a7ZWmpy5QTA/exec";
 
 // 42 THUẬT NGỮ TỪ FILE EXCEL
 const contestBank = [
