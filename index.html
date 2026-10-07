@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biology Contest 1 (Unit 1 - Unit 7)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <header class="app-header">
+      <span class="badge">Đấu trường Sinh học 12 &bull; THPT Chu Văn An - Thái Nguyên</span>
+      <h1>Biology Contest 1: Genetics (Unit 1 - Unit 7)</h1>
+      <p class="subtitle">Đề thi 30 câu ngẫu nhiên: Sắp xếp chữ &bull; Điền khuyết &bull; Trắc nghiệm định nghĩa</p>
+      <div class="participant-badge">
+        👥 Lượt thí sinh tham gia: <strong id="totalParticipantsCount">Đang tải...</strong>
+      </div>
+    </header>
+
+    <!-- MÀN HÌNH 1: ĐĂNG KÝ VÀO PHÒNG THI -->
+    <section id="loginScreen" class="screen-box">
+      <h3>Thông tin Thí sinh</h3>
+      <div class="form-group">
+        <label for="studentName">Họ và tên thí sinh:</label>
+        <input type="text" id="studentName" placeholder="Ví dụ: Nguyễn Thị Mai" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="studentClass">Lớp:</label>
+        <input type="text" id="studentClass" placeholder="Ví dụ: 12A1" autocomplete="off">
+      </div>
+      <div class="rules-box">
+        <p><strong>Quy chế thi đấu:</strong></p>
+        <ul>
+          <li>Đề thi gồm <strong>30 câu hỏi</strong> bốc ngẫu nhiên từ ngân hàng 42 thuật ngữ di truyền.</li>
+          <li>Mỗi câu có <strong>đồng hồ đếm ngược</strong> (20s - 30s). Hết giờ sẽ tự động tính sai và chuyển câu!</li>
+          <li>Bảng xếp hạng ưu tiên thí sinh có <strong>số câu đúng cao nhất</strong> và <strong>thời gian làm bài nhanh nhất</strong>.</li>
+        </ul>
+      </div>
+      <button type="button" class="btn btn-primary btn-large" onclick="startContest()">Bắt đầu thi đấu 🚀</button>
+    </section>
+
+    <!-- MÀN HÌNH 2: KHU VỰC THI ĐẤU -->
+    <section id="quizScreen" class="screen-box" style="display: none;">
+      <div class="quiz-status-bar">
+        <div class="part-indicator">
+          <span id="partNameBadge" class="part-badge">Phần 1: Sắp xếp chữ</span>
+        </div>
+        <div class="progress">Câu: <strong id="questionProgress">1 / 30</strong></div>
+        <div class="timer-box">
+          ⏱️ <span id="timerText">30s</span>
+        </div>
+      </div>
+      <!-- Thanh thời gian đếm ngược trực quan -->
+      <div class="timer-bar-wrap">
+        <div id="timerBar" class="timer-bar"></div>
+      </div>
+
+      <div id="questionArea" class="question-container"></div>
+
+      <p id="actionFeedback" class="feedback-msg"></p>
+
+      <div class="action-footer">
+        <button id="actionBtn" type="button" class="btn btn-primary" onclick="handleCurrentAction()">Trả lời</button>
+      </div>
+    </section>
+
+    <!-- MÀN HÌNH 3: BẢNG KẾT QUẢ & XẾP HẠNG -->
+    <section id="resultScreen" class="screen-box" style="display: none;">
+      <div class="result-summary">
+        <h2>🎉 HOÀN THÀNH BÀI THI</h2>
+        <div class="user-rank-box">
+          <p>Thí sinh: <strong id="resName">...</strong> - Lớp: <strong id="resClass">...</strong></p>
+          <p class="score-display">Điểm số: <span id="resScore">0</span> / <span id="resTotal">30</span></p>
+          <p class="rank-highlight">Xếp hạng của bạn: Thứ <strong id="resRank">...</strong> toàn trường!</p>
+          <p class="time-record">Tổng thời gian: <span id="resTime">...</span></p>
+        </div>
+      </div>
+
+      <!-- BẢNG VINH DANH TOP 10 -->
+      <div class="leaderboard-section">
+        <h3>🏆 BẢNG VINH DANH TOP 10 THÍ SINH DẪN ĐẦU</h3>
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Hạng</th>
+              <th>Thí sinh</th>
+              <th>Lớp</th>
+              <th>Điểm số</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <tr><td colspan="5">Đang tải bảng xếp hạng...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button type="button" class="btn btn-primary" onclick="location.reload()">🔄 Thử thách lượt mới</button>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>Học liệu số & Kiểm tra đánh giá Sinh học &bull; THPT Chu Văn An - Thái Nguyên</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
