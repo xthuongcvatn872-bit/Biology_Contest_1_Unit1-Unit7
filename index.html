@@ -28,12 +28,22 @@
         <label for="studentClass">Lớp:</label>
         <input type="text" id="studentClass" placeholder="Ví dụ: 12A1" autocomplete="off">
       </div>
+      
+      <!-- Ô NHẬP MÃ ĐỢT THI CỦA GIÁO VIÊN -->
+      <div class="form-group">
+        <label for="examCode">Mã đợt thi / Mã lớp (Do GV cấp):</label>
+        <input type="text" id="examCode" placeholder="Để trống nếu là thí sinh thi tự do" autocomplete="off" style="text-transform: uppercase;">
+        <small style="color: #64748b; display: block; margin-top: 4px;">
+          * Nếu thi theo yêu cầu của GV, hãy nhập đúng mã (ví dụ: 12A1_GK1). Thi tự do hãy để trống.
+        </small>
+      </div>
+
       <div class="rules-box">
         <p><strong>Quy chế thi đấu:</strong></p>
         <ul>
           <li>Đề thi gồm <strong>30 câu hỏi</strong> bốc ngẫu nhiên từ ngân hàng 42 thuật ngữ di truyền.</li>
           <li>Mỗi câu có <strong>đồng hồ đếm ngược</strong> (20s - 30s). Hết giờ sẽ tự động tính sai và chuyển câu!</li>
-          <li>Bảng xếp hạng ưu tiên thí sinh có <strong>số câu đúng cao nhất</strong> và <strong>thời gian làm bài nhanh nhất</strong>.</li>
+          <li>Bảng xếp hạng sẽ tính riêng theo từng <strong>Mã đợt thi</strong> của học sinh.</li>
         </ul>
       </div>
       <button type="button" class="btn btn-primary btn-large" onclick="startContest()">Bắt đầu thi đấu 🚀</button>
@@ -50,35 +60,33 @@
           ⏱️ <span id="timerText">30s</span>
         </div>
       </div>
-      <!-- Thanh thời gian đếm ngược trực quan -->
       <div class="timer-bar-wrap">
         <div id="timerBar" class="timer-bar"></div>
       </div>
 
       <div id="questionArea" class="question-container"></div>
-
       <p id="actionFeedback" class="feedback-msg"></p>
-
       <div class="action-footer">
         <button id="actionBtn" type="button" class="btn btn-primary" onclick="handleCurrentAction()">Trả lời</button>
       </div>
     </section>
 
-    <!-- MÀN HÌNH 3: BẢNG KẾT QUẢ & XẾP HẠNG -->
+    <!-- MÀN HÌNH 3: BẢNG KẾT QUẢ & XẾP HẠNG THEO MÃ THI -->
     <section id="resultScreen" class="screen-box" style="display: none;">
       <div class="result-summary">
         <h2>🎉 HOÀN THÀNH BÀI THI</h2>
         <div class="user-rank-box">
           <p>Thí sinh: <strong id="resName">...</strong> - Lớp: <strong id="resClass">...</strong></p>
+          <p style="margin: 6px 0; color: #047857;">Mã đợt thi: <strong id="resExamCode">...</strong></p>
           <p class="score-display">Điểm số: <span id="resScore">0</span> / <span id="resTotal">30</span></p>
-          <p class="rank-highlight">Xếp hạng của bạn: Thứ <strong id="resRank">...</strong> toàn trường!</p>
+          <p class="rank-highlight">Xếp hạng của bạn: Thứ <strong id="resRank">...</strong> (trong nhóm đợt thi này)!</p>
           <p class="time-record">Tổng thời gian: <span id="resTime">...</span></p>
         </div>
       </div>
 
-      <!-- BẢNG VINH DANH TOP 10 -->
+      <!-- BẢNG VINH DANH TOP 10 CỦA ĐỢT THI NÀY -->
       <div class="leaderboard-section">
-        <h3>🏆 BẢNG VINH DANH TOP 10 THÍ SINH DẪN ĐẦU</h3>
+        <h3 id="leaderboardTitle">🏆 BẢNG VINH DANH TOP 10 (ĐỢT THI)</h3>
         <table class="leaderboard-table">
           <thead>
             <tr>
