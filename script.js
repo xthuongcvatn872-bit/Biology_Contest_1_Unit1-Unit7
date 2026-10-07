@@ -48,7 +48,7 @@ const contestBank = [
 ];
 
 // Biến trạng thái
-let studentInfo = { name: "", className: "" };
+let studentInfo = { name: "", className: "", examCode: "TUDO" };
 let testQuestions = [];
 let currentIndex = 0;
 let score = 0;
@@ -84,19 +84,19 @@ function playBeep(freq, type, duration, delay = 0) {
 function playCorrect() { playBeep(523.25, 'sine', 0.15, 0); playBeep(659.25, 'sine', 0.2, 90); }
 function playWrong() { playBeep(220, 'triangle', 0.2, 0); playBeep(180, 'sawtooth', 0.25, 110); }
 
-// Lấy lượt thí sinh
+// Lấy tổng lượt thí sinh khi tải trang
 window.addEventListener("DOMContentLoaded", () => {
   if (BACKEND_URL && !BACKEND_URL.includes("YOUR_GOOGLE")) {
     fetch(BACKEND_URL)
       .then(r => r.json())
       .then(res => {
-        document.getElementById("totalParticipantsCount").textContent = res.totalParticipants || 0;
+        document.getElementById("totalParticipantsCount").textContent = `${res.totalParticipants || 0} lượt`;
       })
       .catch(() => {
         document.getElementById("totalParticipantsCount").textContent = "Sẵn sàng";
       });
   } else {
-    document.getElementById("totalParticipantsCount").textContent = "128 lượt";
+    document.getElementById("totalParticipantsCount").textContent = "Sẵn sàng";
   }
 });
 
@@ -104,12 +104,15 @@ window.addEventListener("DOMContentLoaded", () => {
 function startContest() {
   const nameInput = document.getElementById("studentName").value.trim();
   const classInput = document.getElementById("studentClass").value.trim();
+  const codeInput = document.getElementById("examCode").value.trim().toUpperCase();
+
   if (!nameInput || !classInput) {
     alert("Vui lòng nhập đầy đủ Họ tên và Lớp để ghi danh!");
     return;
   }
   studentInfo.name = nameInput;
   studentInfo.className = classInput;
+  studentInfo.examCode = codeInput === "" ? "TUDO" : codeInput;
 
   generate30Questions();
 
@@ -129,9 +132,7 @@ function startContest() {
 
 // SINH ĐỀ: CHỌN 30 TỪ VÀ CHIA 3 DẠNG
 function generate30Questions() {
-  // Xáo trộn toàn bộ 42 thuật ngữ
   let shuffled42 = [...contestBank].sort(() => 0.5 - Math.random());
-  // Lấy 30 thuật ngữ
   let chosen30 = shuffled42.slice(0, 30);
 
   let p1Terms = chosen30.slice(0, 10);   // Câu 1 - 10: Sắp xếp chữ
@@ -163,13 +164,11 @@ function generate30Questions() {
   p2Terms.forEach((item, idx) => {
     const word = item.word;
     const clean = word.replace(/\s+/g, '');
-    let subType = "";
     let timeLimit = 25;
     let hideIndices = [];
 
     if (idx < 2) {
       // 2 câu Dễ - Dropdown chọn (20 giây)
-      subType = "fill_dropdown";
       timeLimit = 20;
       const hideIdx = Math.floor(Math.random() * clean.length);
       const correctChar = clean[hideIdx].toUpperCase();
@@ -192,7 +191,6 @@ function generate30Questions() {
       return;
     } else if (idx < 4) {
       // 2 câu Dễ - Tự gõ 1 chữ (20 giây)
-      subType = "fill_text_easy";
       timeLimit = 20;
       let valid = [];
       for (let i = 0; i < word.length; i++) if (word[i] !== ' ') valid.push(i);
@@ -200,7 +198,6 @@ function generate30Questions() {
       hideIndices = [valid[0]];
     } else if (idx < 7) {
       // 3 câu Trung bình - Khuyết 2 chữ (25 giây)
-      subType = "fill_text_med";
       timeLimit = 25;
       let valid = [];
       for (let i = 0; i < word.length; i++) if (word[i] !== ' ') valid.push(i);
@@ -208,7 +205,6 @@ function generate30Questions() {
       hideIndices = valid.slice(0, Math.min(2, valid.length - 1));
     } else {
       // 3 câu Khó - Khuyết 3 chữ (30 giây)
-      subType = "fill_text_hard";
       timeLimit = 30;
       let valid = [];
       for (let i = 0; i < word.length; i++) if (word[i] !== ' ') valid.push(i);
@@ -265,7 +261,6 @@ function loadQuestion(idx) {
   btn.textContent = "Trả lời";
   btn.className = "btn btn-primary";
 
-  // Khởi động đồng hồ đếm ngược từng câu
   questionDuration = q.timeLimit;
   questionSecondsLeft = q.timeLimit;
   updateTimerUI();
@@ -333,7 +328,6 @@ function loadQuestion(idx) {
 
   area.innerHTML = html;
 
-  // Tự động focus ô nhập
   if (q.type === "scramble") {
     setTimeout(() => { const el = document.getElementById("ansScramble"); if (el) el.focus(); }, 100);
   } else if (q.type === "fill_text") {
@@ -382,7 +376,6 @@ function handleTimeout() {
   fb.textContent = `⏰ HẾT THỜI GIAN! Đáp án đúng: ${q.term}`;
   fb.className = "feedback-msg wrong";
 
-  // Khóa tương tác
   disableInputs();
 
   btn.textContent = "Câu tiếp theo ▶";
@@ -480,7 +473,7 @@ function selectQuizOption(btn, val) {
   window.selectedQuizValue = val;
 }
 
-// NỘP BÀI THI & XẾP HẠNG
+// NỘP BÀI THI & XẾP HẠNG THEO MÃ
 function finishContest() {
   clearInterval(contestTimerInterval);
   clearInterval(questionTimerInterval);
@@ -490,6 +483,7 @@ function finishContest() {
 
   document.getElementById("resName").textContent = studentInfo.name;
   document.getElementById("resClass").textContent = studentInfo.className;
+  document.getElementById("resExamCode").textContent = studentInfo.examCode === "TUDO" ? "Thi tự do (TUDO)" : studentInfo.examCode;
   document.getElementById("resScore").textContent = score;
   document.getElementById("resTotal").textContent = testQuestions.length;
 
@@ -497,13 +491,18 @@ function finishContest() {
   const s = String(totalTimeSeconds % 60).padStart(2, '0');
   document.getElementById("resTime").textContent = `${m} phút ${s} giây`;
 
+  document.getElementById("leaderboardTitle").textContent = 
+    `🏆 BẢNG VINH DANH TOP 10 (MÃ: ${studentInfo.examCode})`;
+
   if (BACKEND_URL && !BACKEND_URL.includes("YOUR_GOOGLE")) {
-    document.getElementById("resRank").textContent = "Đang đồng bộ điểm số...";
+    document.getElementById("resRank").textContent = "Đang tính thứ hạng nhóm...";
+    
     fetch(BACKEND_URL, {
       method: "POST",
       body: JSON.stringify({
         fullName: studentInfo.name,
         className: studentInfo.className,
+        examCode: studentInfo.examCode,
         score: score,
         totalQuestions: testQuestions.length,
         timeSeconds: totalTimeSeconds
@@ -512,13 +511,14 @@ function finishContest() {
     .then(r => r.json())
     .then(data => {
       document.getElementById("resRank").textContent = data.rank || "...";
+      document.getElementById("totalParticipantsCount").textContent = `${data.totalParticipants} lượt`;
       renderLeaderboard(data.top10);
     })
     .catch(() => {
       document.getElementById("resRank").textContent = "Đã lưu offline";
     });
   } else {
-    document.getElementById("resRank").textContent = "1 (Thử nghiệm)";
+    document.getElementById("resRank").textContent = "1";
     renderLeaderboard([
       { name: studentInfo.name, className: studentInfo.className, score: score, time: totalTimeSeconds }
     ]);
@@ -528,7 +528,7 @@ function finishContest() {
 function renderLeaderboard(top10) {
   const tbody = document.getElementById("leaderboardBody");
   if (!top10 || top10.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">Chưa có dữ liệu xếp hạng.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5">Chưa có dữ liệu xếp hạng cho mã đợt thi này.</td></tr>`;
     return;
   }
 
